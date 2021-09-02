@@ -49,6 +49,16 @@ namespace AddressBook.Models
                 LandlineNumber = "4030123121",
                 WebsiteURL = "www.technovert.com",
                 ContactAddress = "123 now here Some street Madhapur, Hyderabad 500033"
+            },
+            new ContactDetails()
+            {
+                Id = 5,
+                ContactName = "Nokia Samsung",
+                Email = "noksam@technovert.com",
+                MobileNumber = "1234567890",
+                LandlineNumber = "0987456321",
+                WebsiteURL = "www.technovert.com",
+                ContactAddress = "123 now here Some street Madhapur, Hyderabad 500033"
             }
         };
     }
