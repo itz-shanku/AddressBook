@@ -4,35 +4,57 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using AddressBook.Models;
 using System.Web.Http.Cors;
+using AddressBook.Models;
+
 namespace AddressBook.Controllers
 {
     [EnableCors(origins: "http://localhost:4200", headers:"*", methods:"*")]
-    [Route("api/addressbook")]
+    [RoutePrefix("api/addressbook")]
     public class AddressBookController : ApiController
     {
-        StaticData contactList = new StaticData();
+        private readonly IContactService contactService;
+        public AddressBookController(
+            IContactService _contactService
+            )
+        {
+            contactService = _contactService;
+        }
 
         [HttpGet]
         [Route("contact/{id}")]
         public ContactDetails GetContact(int id)
         {
-            return contactList.DefaultList.FirstOrDefault(E => E.Id == id);
+            return contactService.ReturnSpecificContact(id);
+        }
+
+        [HttpGet]
+        [Route("contact/first")]
+        public int GetFirstContact()
+        {
+            return contactService.ReturnFirstContact();
+        }
+
+        [HttpGet]
+        [Route("contact/last")]
+        public int GetLastContact()
+        {
+            return contactService.ReturnLastContact();
         }
 
         [HttpGet]
         public List<ContactDetails> GetAllContact()
         {
-            return contactList.DefaultList;
+            return contactService.ReturnContactList();
         }
 
         [HttpDelete]
+        [Route("contact/{id}/delete")]
         public HttpResponseMessage DeleteContact(int id)
         {
             try
             {
-                var currentExistingConatct = contactList.DefaultList.FirstOrDefault(E => E.Id == id);
+                var currentExistingConatct = contactService.FindSpecificContact(id);
 
                 if (currentExistingConatct == null)
                 {
@@ -40,7 +62,7 @@ namespace AddressBook.Controllers
                 }
                 else
                 {
-                    contactList.DefaultList.Remove(currentExistingConatct);
+                    contactService.DeleteSpecificContact(currentExistingConatct);
 
                     return ReturnHttpOKStatus("Contact Deletion Successfull!");
                 }
@@ -52,11 +74,12 @@ namespace AddressBook.Controllers
         }
 
         [HttpPut]
+        [Route("contact/{id}/update")]
         public HttpResponseMessage PutContact(int id, [FromBody]ContactDetails editedContact)
         {
             try
             {
-                var currentExistingConatct = contactList.DefaultList.FirstOrDefault(E => E.Id == id);
+                var currentExistingConatct = contactService.FindSpecificContact(id);
 
                 if (currentExistingConatct == null)
                 {
@@ -64,12 +87,7 @@ namespace AddressBook.Controllers
                 }
                 else
                 {
-                    currentExistingConatct.ContactName = editedContact.ContactName;
-                    currentExistingConatct.Email = editedContact.Email;
-                    currentExistingConatct.MobileNumber = editedContact.MobileNumber;
-                    currentExistingConatct.LandlineNumber = editedContact.LandlineNumber;
-                    currentExistingConatct.WebsiteURL = editedContact.WebsiteURL;
-                    currentExistingConatct.ContactAddress = editedContact.ContactAddress;
+                    contactService.UpdateSpecificContact(currentExistingConatct, editedContact);
 
                     return ReturnHttpOKStatus("Contact Updation Successfull!");
                 }
@@ -81,22 +99,15 @@ namespace AddressBook.Controllers
         }
 
         [HttpPost]
+        [Route("add")]
         public HttpResponseMessage PostContact([FromBody]ContactDetails newUserContact)
         {
             try
             {
-                var newContact = new ContactDetails();
-
-                newContact.Id = contactList.DefaultList.Count;
-                newContact.ContactName = newUserContact.ContactName;
-                newContact.Email = newUserContact.Email;
-                newContact.MobileNumber = newUserContact.MobileNumber;
-                newContact.LandlineNumber = newUserContact.LandlineNumber;
-                newContact.WebsiteURL = newUserContact.WebsiteURL;
-                newContact.ContactAddress = newContact.ContactAddress;
+                contactService.AddNewContact(newUserContact);
 
                 var responseMessage = Request.CreateResponse(HttpStatusCode.Created, "Contact Addition Successfull!");
-                responseMessage.Headers.Location = new Uri(Request.RequestUri + "/" + newContact.Id.ToString());
+                // responseMessage.Headers.Location = new Uri(Request.RequestUri + "/" + newContact.Id.ToString());
                 return responseMessage;
             }
             catch(Exception E)
