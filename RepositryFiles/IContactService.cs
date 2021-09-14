@@ -10,8 +10,7 @@ namespace AddressBook.Controllers
         int ReturnLastContact();
         List<ContactDetails> ReturnContactList();
         void DeleteSpecificContact(ContactDetails currentContact);
-        void UpdateSpecificContact(ContactDetails currentContact, ContactDetails editedContact);
+        void UpdateSpecificContact(ContactDetails editedContact);
         void AddNewContact(ContactDetails newUserContact);
-        ContactDetails FindSpecificContact(int id);
     }
 }

@@ -15,7 +15,7 @@ namespace AddressBook.Controllers
     {
         private readonly IContactService contactService;
         public AddressBookController(
-            IContactService _contactService
+             IContactService _contactService
             )
         {
             contactService = _contactService;
@@ -26,20 +26,6 @@ namespace AddressBook.Controllers
         public ContactDetails GetContact(int id)
         {
             return contactService.ReturnSpecificContact(id);
-        }
-
-        [HttpGet]
-        [Route("contact/first")]
-        public int GetFirstContact()
-        {
-            return contactService.ReturnFirstContact();
-        }
-
-        [HttpGet]
-        [Route("contact/last")]
-        public int GetLastContact()
-        {
-            return contactService.ReturnLastContact();
         }
 
         [HttpGet]
@@ -54,7 +40,7 @@ namespace AddressBook.Controllers
         {
             try
             {
-                var currentExistingConatct = contactService.FindSpecificContact(id);
+                var currentExistingConatct = contactService.ReturnSpecificContact(id);
 
                 if (currentExistingConatct == null)
                 {
@@ -79,7 +65,7 @@ namespace AddressBook.Controllers
         {
             try
             {
-                var currentExistingConatct = contactService.FindSpecificContact(id);
+                var currentExistingConatct = contactService.ReturnSpecificContact(id);
 
                 if (currentExistingConatct == null)
                 {
@@ -87,7 +73,7 @@ namespace AddressBook.Controllers
                 }
                 else
                 {
-                    contactService.UpdateSpecificContact(currentExistingConatct, editedContact);
+                    contactService.UpdateSpecificContact(editedContact);
 
                     return ReturnHttpOKStatus("Contact Updation Successfull!");
                 }

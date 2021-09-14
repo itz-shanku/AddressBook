@@ -1,16 +1,24 @@
 ﻿using System.Linq;
 using AddressBook.Models;
 using System.Collections.Generic;
+using PetaPoco;
 
 namespace AddressBook.Controllers
 {
     public class ContactService : IContactService
     {
+
+        Database dataContext;
+        public ContactService()
+        {
+            dataContext = new Database("AddressBookDB");
+        }
+
         StaticData contactList = new StaticData();
 
         public ContactDetails ReturnSpecificContact (int id)
         {
-            return contactList.DefaultList.FirstOrDefault(E => E.Id == id);
+            return dataContext.FirstOrDefault<ContactDetails>($"SELECT * FROM CONTACTS WHERE Id ={id}");
         }
         public int ReturnFirstContact ()
         {
@@ -22,36 +30,19 @@ namespace AddressBook.Controllers
         }
         public List<ContactDetails> ReturnContactList ()
         {
-            return contactList.DefaultList;
+            return dataContext.Fetch<ContactDetails>("SELECT * FROM CONTACTS");
         }
         public void DeleteSpecificContact (ContactDetails currentContact)
         {
-            contactList.DefaultList.Remove(currentContact);
+            dataContext.Delete(currentContact);
         }
-        public void UpdateSpecificContact (ContactDetails currentContact, ContactDetails editedContact)
+        public void UpdateSpecificContact (ContactDetails editedContact)
         {
-            currentContact.ContactName = editedContact.ContactName;
-            currentContact.Email = editedContact.Email;
-            currentContact.MobileNumber = editedContact.MobileNumber;
-            currentContact.LandlineNumber = editedContact.LandlineNumber;
-            currentContact.WebsiteURL = editedContact.WebsiteURL;
-            currentContact.ContactAddress = editedContact.ContactAddress;
+            dataContext.Update(editedContact);
         }
         public void AddNewContact (ContactDetails newUserContact)
         {
-            var newContact = new ContactDetails();
-
-            newContact.Id = contactList.DefaultList.Count;
-            newContact.ContactName = newUserContact.ContactName;
-            newContact.Email = newUserContact.Email;
-            newContact.MobileNumber = newUserContact.MobileNumber;
-            newContact.LandlineNumber = newUserContact.LandlineNumber;
-            newContact.WebsiteURL = newUserContact.WebsiteURL;
-            newContact.ContactAddress = newContact.ContactAddress;
-        }
-        public ContactDetails FindSpecificContact (int id)
-        {
-            return contactList.DefaultList.FirstOrDefault(E => E.Id == id);
+            dataContext.Insert(newUserContact);
         }
     }
 }
