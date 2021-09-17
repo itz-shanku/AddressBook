@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Cors;
+﻿using System.Web.Http;
 using AddressBook.Models;
+using AddressBook.Service;
+using System.Web.Http.Cors;
+using System.Collections.Generic;
 
 namespace AddressBook.Controllers
 {
@@ -25,89 +22,34 @@ namespace AddressBook.Controllers
         [Route("contact/{id}")]
         public ContactDetails GetContact(int id)
         {
-            return contactService.ReturnSpecificContact(id);
+            return contactService.GetSpecificContact(id);
         }
 
         [HttpGet]
-        public List<ContactDetails> GetAllContact()
+        public ContactDetails GetAllContact()
         {
-            return contactService.ReturnContactList();
+            return contactService.GetContactList();
         }
 
         [HttpDelete]
         [Route("contact/{id}/delete")]
-        public HttpResponseMessage DeleteContact(int id)
+        public IHttpActionResult DeleteContact(int id)
         {
-            try
-            {
-                var currentExistingConatct = contactService.ReturnSpecificContact(id);
-
-                if (currentExistingConatct == null)
-                {
-                    return ReturnHttpNotFoundStatus(id);
-                }
-                else
-                {
-                    contactService.DeleteSpecificContact(currentExistingConatct);
-
-                    return ReturnHttpOKStatus("Contact Deletion Successfull!");
-                }
-            }
-            catch(Exception E)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, E);
-            }
+           return Ok(contactService.DeleteContact(id));
         }
 
         [HttpPut]
         [Route("contact/{id}/update")]
-        public HttpResponseMessage PutContact(int id, [FromBody]ContactDetails editedContact)
+        public IHttpActionResult PutContact(int id, [FromBody] ContactDetails editedContact)
         {
-            try
-            {
-                var currentExistingConatct = contactService.ReturnSpecificContact(id);
-
-                if (currentExistingConatct == null)
-                {
-                    return ReturnHttpNotFoundStatus(id);
-                }
-                else
-                {
-                    contactService.UpdateSpecificContact(editedContact);
-
-                    return ReturnHttpOKStatus("Contact Updation Successfull!");
-                }
-            }
-            catch(Exception E)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, E);
-            }
+            return Ok(contactService.UpdateContact(id, editedContact));
         }
 
         [HttpPost]
         [Route("add")]
-        public HttpResponseMessage PostContact([FromBody]ContactDetails newUserContact)
+        public IHttpActionResult PostContact([FromBody] ContactDetails newContact)
         {
-            try
-            {
-                contactService.AddNewContact(newUserContact);
-
-                var responseMessage = Request.CreateResponse(HttpStatusCode.Created, "Contact Addition Successfull!");
-                // responseMessage.Headers.Location = new Uri(Request.RequestUri + "/" + newContact.Id.ToString());
-                return responseMessage;
-            }
-            catch(Exception E)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, E);
-            }
-        }
-        private HttpResponseMessage ReturnHttpNotFoundStatus(int id)
-        {
-            return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Given contact id: " + id.ToString() + " not found.");
-        }
-        private HttpResponseMessage ReturnHttpOKStatus(string responseMessage)
-        {
-            return Request.CreateResponse(HttpStatusCode.OK, responseMessage);
+            return Ok(contactService.AddContact(newContact));
         }
     }
 }

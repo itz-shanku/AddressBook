@@ -7,6 +7,7 @@ namespace AddressBook.App_Start
     using SimpleInjector;
     using SimpleInjector.Integration.WebApi;
     using SimpleInjector.Lifestyles;
+    using AddressBook.Service;
     
     public static class SimpleInjectorWebApiInitializer
     {
