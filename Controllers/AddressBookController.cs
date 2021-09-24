@@ -26,7 +26,7 @@ namespace AddressBook.Controllers
         }
 
         [HttpGet]
-        public ContactDetails GetAllContact()
+        public List<ContactDetails> GetAllContact()
         {
             return contactService.GetContactList();
         }
