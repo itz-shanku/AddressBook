@@ -22,13 +22,13 @@ namespace AddressBook.Controllers
         [Route("contact/{id}")]
         public ContactDetails GetContact(int id)
         {
-            return contactService.GetSpecificContact(id);
+            return contactService.GetContact(id);
         }
 
         [HttpGet]
         public List<ContactDetails> GetAllContact()
         {
-            return contactService.GetContactList();
+            return contactService.GetContacts();
         }
 
         [HttpDelete]
